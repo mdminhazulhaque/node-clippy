@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Md. Minhazul Haque" />
+    <meta name="description" content="Share clipboard over the network" />
+    <title>Node Clippy</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link href="https://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <style>*{font-family:Inconsolata,sans-serif!important}body{padding:20px;padding-top:0}textarea{height:auto!important;width:100%;font-size:16px;padding:15px}label{font-size:20px}</style>
+    <script>
+    let head = '<textarea class="form-control"';
+    let tail = '</textarea>';
+      $(function () {
+        var socket = io();
+        $('#action-share').click(function() {
+          socket.emit('chat message', $('#in').val());
+          $('#in').val("");
+          $('#in').focus();
+          return false;
+        });
+        $('#action-copy').click(function() {
+          $('#out').select();
+          document.execCommand("copy");
+          return false;
+        });
+        socket.on('chat message', function(msg){
+          $('#out').text(msg);
+          var content = head + escape(msg) + tail;
+          $('#list').append(content);
+          $("#info").fadeIn(250),$("#info").html("Received new share!"),$("#info").fadeOut(2e3);
+        });
+      });
+    </script>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>Node Clippy <small class="text-muted" id="info"></small></h1>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                <label for="in">Write or paste text here</label>
+                <textarea class="form-control" id="in" placeholder="" rows="5"></textarea>
+                </div>
+                <button class="btn btn-dark" id="action-share">Share</button>            
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                <label for="out">Clipboard shares will appear here</label>
+                <textarea class="form-control" id="out" placeholder="" rows="5"></textarea>
+                </div>  
+                <button class="btn btn-dark" id="action-copy">Copy</button>
+            </div>
+        </div>
+        <br>
+        <a class="btn btn-dark" role="button" target="_blank" href="https://github.com/mdminhazulhaque/node-clippy">mdminhazulhaque/node-clippy</a>
+    </div>
+</body>
+</html>
